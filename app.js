@@ -5,13 +5,11 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-
+const session = require('express-session');
+const passport = require('passport');
+var SQLiteStore = require('connect-sqlite3')(session);
 var indexRouter = require('./routes/index');
-<<<<<<< HEAD
 const authRouter = require('./routes/auth');
-=======
-var authRouter = require('./routes/auth');
->>>>>>> 1387595c076eeb55834278286a0ca062f83eef7b
 
 var app = express();
 
@@ -26,13 +24,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
+app.use(session({
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: false,
+  store: new SQLiteStore({ db: 'sessions.db', dir: './var/db' })
+}));
+app.use(passport.authenticate('session'));
 app.use('/', indexRouter);
 app.use('/', authRouter);
-<<<<<<< HEAD
-=======
-
->>>>>>> 1387595c076eeb55834278286a0ca062f83eef7b
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
